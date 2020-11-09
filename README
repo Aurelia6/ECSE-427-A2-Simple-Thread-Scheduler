@@ -1,0 +1,45 @@
+7 files are provided:
+a1_lib.c
+a1_lib.h
+Makefile
+queue.h
+README
+sut.c
+sut.h
+
+
+The Makefile allows to show that sut.c, a1.lib.c compiles.
+It compiled previously with (assuming there are 5 tests):
+# .DEFAULT_GOAL=all
+
+CC=gcc
+CFLAGS=-fsanitize=signed-integer-overflow -fsanitize=undefined -g -std=gnu99 -O2 -Wall -Wextra -Wno-sign-compare -Wno-unused-parameter -Wno-unused-variable -Wshadow -pthread
+
+SUT=sut
+TEST1=test1
+TEST2=test2
+TEST3=test3
+TEST4=test4
+TEST5=test5
+
+tests: a1_lib.c sut.c test1.c test2.c test3.c test4.c test5.c
+	$(CC) -o $(TEST1) $(CFLAGS) test1.c sut.c a1_lib.c
+	$(CC) -o $(TEST2) $(CFLAGS) test2.c sut.c a1_lib.c
+	$(CC) -o $(TEST3) $(CFLAGS) test3.c sut.c a1_lib.c
+	$(CC) -o $(TEST4) $(CFLAGS) test4.c sut.c a1_lib.c
+	$(CC) -o $(TEST5) $(CFLAGS) test5.c sut.c a1_lib.c
+
+clean:
+	rm -rf $(TEST1) $(TEST2) $(TEST3) $(TEST4) $(TEST5)
+
+
+I used arrays and structure in order to avoid overwriting when enqueuing.
+In addition a message error is printed when sut_open() is not called before calling sut_read(), sut_write() or sut_close().
+
+I used some boolean flags to know when we are able to shutdown I_Exec and C_Exec pthreads.
+
+For sut_read(), I did not find the reason why, when I wrote recv_message() in the I_Exec method, it returned an empty string. So I commented out what I think should work.
+
+
+
+
